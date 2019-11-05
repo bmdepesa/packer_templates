@@ -1,0 +1,42 @@
+{
+    "variables": {
+      "name": "ubuntu_1804_docker_1903_packer",
+      "source_ami": "ami-04b9e92b5572fa0d1",
+      "access_key":"",
+      "secret_key":"",
+      "region":"us-east-1"
+    },
+    "builders": [{
+      "type": "amazon-ebs",
+      "access_key": "{{user `access_key`}}",
+      "secret_key":"{{user `secret_key`}}",
+      "ami_name": "{{user `name`}}",
+      "region": "{{user `region`}}",
+      "ami_regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-1",
+        "us-west-2"
+      ],
+      "source_ami": "{{user `source_ami`}}",
+      "instance_type": "t2.medium",
+      "communicator": "ssh",
+      "ssh_username": "ubuntu",
+      "force_deregister": true,
+      "run_tags":{"Name":"packer-image"}
+    }],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": "sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean -y && sudo apt autoclean -y"
+        },
+        {
+            "type": "shell",
+            "inline": ["curl https://releases.rancher.com/install-docker/19.03.sh | sh"]
+        },
+        {
+            "type": "shell",
+            "inline": ["sudo usermod -aG docker ubuntu"]
+        }
+      ]
+  }
